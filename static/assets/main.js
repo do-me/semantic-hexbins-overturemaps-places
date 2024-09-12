@@ -66,7 +66,7 @@ $(document).ready(function () {
         var bm_web_gry = L.maplibreGL({
             style: 'https://sgx.geodatenzentrum.de/gdz_basemapde_vektor/styles/bm_web_gry.json',
         });
-    
+
         var bm_web_col = L.maplibreGL({
             style: 'https://sgx.geodatenzentrum.de/gdz_basemapde_vektor/styles/bm_web_col.json',
         });
@@ -108,7 +108,7 @@ $(document).ready(function () {
             "Protomaps NY Black": protomaps_ny_black,
             "Protomaps NY Grayscale": protomaps_ny_grayscale
         }).addTo(map);
-    
+
 
         L.control.scale().addTo(map);
         L.Control.geocoder().addTo(map);
@@ -188,7 +188,7 @@ $(document).ready(function () {
             ));
 
         hexLayer.dispatch()
-            .on('click', function(d, i) {
+            .on('click', function (d, i) {
                 //console.log({ type: 'click', event: d, index: i, context: this });
                 hexagon_click(d);
             });
@@ -293,29 +293,86 @@ $(document).ready(function () {
                 // bin score
                 const scores = aboveThreshold.map(obj => obj["o"]["score"]);
 
+                // these functions are somehow explainable and referenced in the paper
                 const minScore = Math.min(...scores);
                 const maxScore = Math.max(...scores);
                 const meanScore = scores.reduce((sum, score) => sum + score, 0) / scores.length;
                 const medianScore = scores.sort((a, b) => a - b)[Math.floor(scores.length / 2)];
 
+                // experimental, searching for "homogenous areas"
+                // Range
+                const rangeScore = Math.max(...scores) - Math.min(...scores);
+                const madScore = scores.reduce((sum, score) => sum + Math.abs(score - meanScore), 0) / scores.length; // Mean Absolute Deviation (MAD)
+                const varianceScore = scores.reduce((sum, score) => sum + (score - meanScore) ** 2, 0) / scores.length;// Standard Deviation
+                const stdDevScore = Math.sqrt(varianceScore);
+                const cvScore = (stdDevScore / meanScore)// Coefficient of Variation (CV)
+
+                /* // these functions are included here just for experimenting, many might not even work or not make sense
+                const sumScore = scores.reduce((sum, score) => sum + score, 0);        // Sum of scores
+                const varianceScore = scores.reduce((sum, score) => sum + (score - meanScore) ** 2, 0) / scores.length;  // Variance
+                const stdDevScore = Math.sqrt(varianceScore);                          // Standard deviation
+                const rangeScore = maxScore - minScore;                                // Range
+                const q1Score = scores[Math.floor(scores.length * 0.25)];              // First quartile (25th percentile)
+                const q3Score = scores[Math.floor(scores.length * 0.75)];              // Third quartile (75th percentile)
+                const iqrScore = q3Score - q1Score;                                    // Interquartile range (IQR)
+                const coefVarScore = (stdDevScore / meanScore) * 100;                  // Coefficient of variation (CV)
+                const skewnessScore = scores.reduce((sum, score) => sum + ((score - meanScore) ** 3), 0) / (scores.length * stdDevScore ** 3); // Skewness
+                const kurtosisScore = scores.reduce((sum, score) => sum + ((score - meanScore) ** 4), 0) / (scores.length * stdDevScore ** 4) - 3;  // Kurtosis (excess)
+                const harmonicMeanScore = scores.length / scores.reduce((sum, score) => sum + 1 / score, 0); // Harmonic mean
+                const geometricMeanScore = Math.exp(scores.reduce((sum, score) => sum + Math.log(score), 0) / scores.length); // Geometric mean
+                const madScore = scores.reduce((sum, score) => sum + Math.abs(score - meanScore), 0) / scores.length; // Mean absolute deviation (MAD)
+                const giniCoefficient = scores.map(score => scores.map(y => Math.abs(score - y)).reduce((sum, val) => sum + val, 0)).reduce((sum, val) => sum + val, 0) / (2 * scores.length**2 * meanScore); // Gini coefficient
+                const entropyScore = -scores.reduce((sum, score) => sum + (score / sumScore) * Math.log(score / sumScore), 0); // Shannon entropy
+                const zScores = scores.map(score => (score - meanScore) / stdDevScore); // Z-scores for each data point
+                const moment3Score = scores.reduce((sum, score) => sum + ((score - meanScore) ** 3), 0) / scores.length; // 3rd central moment (used for skewness)
+                const moment4Score = scores.reduce((sum, score) => sum + ((score - meanScore) ** 4), 0) / scores.length; // 4th central moment (used for kurtosis)
+                const meanSquaredError = scores.reduce((sum, score) => sum + (score - meanScore) ** 2, 0) / scores.length; // Mean squared error (MSE)
+                const coefficientOfDispersion = iqrScore / meanScore; // Coefficient of dispersion
+                const percentiles = [0.1, 0.9].map(p => scores[Math.floor(scores.length * p)]); // Percentiles, e.g., 10th and 90th
+                const rangePercentile = percentiles[1] - percentiles[0]; // Range between two percentiles (like 10th - 90th percentile range)
+                */
                 // Get the selected value from the dropdown
                 const selectedValue = document.getElementById("min_max_mean_median").value;
 
                 // Return the respective score based on the selected value
+                const log_vals = false;
+
                 switch (selectedValue) {
                     case "min":
+                        if (log_vals) console.log(`Selected value: ${selectedValue}, Score: ${minScore}`);
                         return minScore;
                     case "max":
+                        if (log_vals) console.log(`Selected value: ${selectedValue}, Score: ${maxScore}`);
                         return maxScore;
                     case "mean":
+                        if (log_vals) console.log(`Selected value: ${selectedValue}, Score: ${meanScore}`);
                         return meanScore;
                     case "median":
+                        if (log_vals) console.log(`Selected value: ${selectedValue}, Score: ${medianScore}`);
                         return medianScore;
+                    case "range":
+                        if (log_vals) console.log(`Selected value: ${selectedValue}, Score: ${rangeScore}`);
+                        return rangeScore;
+                    case "mad":
+                        if (log_vals) console.log(`Selected value: ${selectedValue}, Score: ${madScore}`);
+                        return madScore;
+                    case "variance":
+                        if (log_vals) console.log(`Selected value: ${selectedValue}, Score: ${varianceScore}`);
+                        return varianceScore;
+                    case "stdDev":
+                        if (log_vals) console.log(`Selected value: ${selectedValue}, Score: ${stdDevScore}`);
+                        return stdDevScore;
+                    case "cv":
+                        if (log_vals) console.log(`Selected value: ${selectedValue}, Score: ${cvScore}`);
+                        return cvScore;
                     default:
-                        return maxScore; 
-                    }
+                        throw new Error(`Unknown selected value: ${selectedValue}`);
+                }
+
+
+
             } else {
-                return 0; // 0 -> white, null -> transparent
+                return null; // 0 -> white, null -> transparent
             }
         });
 
@@ -326,7 +383,7 @@ $(document).ready(function () {
         // bin stats
 
         const aboveThreshold = d.filter(obj => obj["o"]["score"] >= minScore);
-
+        const scores = aboveThreshold.map(obj => obj["o"]["score"]);
 
         let aboveThresholdSumCounts = 0
         if (mean_location_variant) {
@@ -355,9 +412,9 @@ $(document).ready(function () {
             result += obj["o"]["categories_formatted"] + ',';
             return result;
         }, '')
-        .split(',')
-        .filter(Boolean)  // Remove any empty strings (in case of trailing commas)
-        .reduce((set, value) => set.add(value), new Set()); // Create a Set for unique values
+            .split(',')
+            .filter(Boolean)  // Remove any empty strings (in case of trailing commas)
+            .reduce((set, value) => set.add(value), new Set()); // Create a Set for unique values
 
         // Convert Set to Array and sort alphabetically
         let sortedCategoryArray = [...uniqueSortedStrings].sort();
@@ -370,6 +427,11 @@ $(document).ready(function () {
             truncatedCategories += "<br>...";
         }
 
+
+        let truncatedScores = scores.map(score => parseFloat(score.toFixed(2))).slice(0, maxCategoriesToShow).join(", ")
+        if (scores.length > maxCategoriesToShow) {
+            truncatedScores += ", ...";
+        }
 
         /////////////////////////////////////////////////////
 
@@ -395,6 +457,10 @@ $(document).ready(function () {
             <td>Categories:</td>
             <td>${truncatedCategories}</td>
         </tr>
+        <tr>
+            <td>Similarity Scores:</td>
+            <td>${truncatedScores}</td>
+        </tr>
         </table>
         `
         // simple version
@@ -406,36 +472,36 @@ $(document).ready(function () {
         return tooltip_text
     }
 
-    function hexagon_click(d){
-        var locations = d.reduce(function (acc, obj) { 
+    function hexagon_click(d) {
+        var locations = d.reduce(function (acc, obj) {
             var locationId = obj["o"]["node.location_id"];
             if (locationId && locationId !== "" && locationId !== null) {
                 acc.push(locationId);
             }
-            return acc; 
+            return acc;
         }, []);
-        
+
         locations = [...new Set(locations)];
-        
+
         let locationsHTML = ""; // initialize result variable as empty string
-        
+
         for (let i = 0; i < locations.length; i++) {
             const element = locations[i];
-            
+
             // Generate URLs for both Facebook and Instagram
             const instagramHref = `https://www.instagram.com/explore/locations/${element}`;
             const facebookHref = `https://www.facebook.com/${element}`;
-            
+
             // Create hyperlinks for Facebook and Instagram
             const instagramLink = `<a href="${instagramHref}" target="_blank">Instagram</a>`;
             const facebookLink = `<a href="${facebookHref}" target="_blank">Facebook</a>`;
-            
+
             // Concatenate the location ID and links, and append to the result
             locationsHTML += `${element}: ${facebookLink} | ${instagramLink}<br>`;
         }
-        
+
         $("#locations").html(locationsHTML);
-        
+
 
 
 
@@ -448,10 +514,10 @@ $(document).ready(function () {
             result += obj["o"]["categories_formatted"] + ',';
             return result;
         }, '')
-        // Remove the trailing comma, split the string by commas, create a Set, and convert it back to an array
-        .split(',')
-        .filter(Boolean)  // Remove any empty strings (in case of trailing commas)
-        .reduce((set, value) => set.add(value), new Set()) // Create a Set for unique values
+            // Remove the trailing comma, split the string by commas, create a Set, and convert it back to an array
+            .split(',')
+            .filter(Boolean)  // Remove any empty strings (in case of trailing commas)
+            .reduce((set, value) => set.add(value), new Set()) // Create a Set for unique values
         // Convert Set to Array and sort alphabetically
         let sortedCategoryArray = [...uniqueSortedStrings].sort();
         $("#categories").html(sortedCategoryArray.join(", "))
@@ -508,13 +574,13 @@ $(document).ready(function () {
         hexLayer.redraw()
     }
 
-    async function initialize_data(query=false){
+    async function initialize_data(query = false) {
 
-        $("#spinner").attr('hidden',false);
+        $("#spinner").attr('hidden', false);
         document.getElementById("queryData").disabled = true;
 
         await loadRemoteGzippedJSON(filename);
-        if (query){
+        if (query) {
             computeQueryEmbedding()
         }
 
@@ -616,12 +682,12 @@ $(document).ready(function () {
     $("#dataFile").on("change", function () {
         filename = "data/" + $(this).val();
         mean_location_variant = filename.includes("mean_location");
-        initialize_data(query=true)
+        initialize_data(query = true)
     });
 
     $('#queryText').keydown(function (event) {
         if (event.keyCode == 13) {
-            event.preventDefault(); 
+            event.preventDefault();
             computeQueryEmbedding();
         }
     });
