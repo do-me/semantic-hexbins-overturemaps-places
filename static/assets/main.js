@@ -71,10 +71,42 @@ $(document).ready(function () {
             style: 'https://sgx.geodatenzentrum.de/gdz_basemapde_vektor/styles/bm_web_col.json',
         });
 
+        // Create different theme layers for Protomaps New York
+        var protomaps_ny_light = protomapsL.leafletLayer({
+            url: './static/protomaps/new_york.pmtiles',
+            theme: 'light'
+        });
+
+        var protomaps_ny_dark = protomapsL.leafletLayer({
+            url: './static/protomaps/new_york.pmtiles',
+            theme: 'dark'
+        });
+
+        var protomaps_ny_white = protomapsL.leafletLayer({
+            url: './static/protomaps/new_york.pmtiles',
+            theme: 'white'
+        });
+
+        var protomaps_ny_black = protomapsL.leafletLayer({
+            url: './static/protomaps/new_york.pmtiles',
+            theme: 'black'
+        });
+
+        var protomaps_ny_grayscale = protomapsL.leafletLayer({
+            url: './static/protomaps/new_york.pmtiles',
+            theme: 'grayscale'
+        });
+
+        // Layer control for switching between base layers
         layerControl = L.control.layers({
             "OpenStreetMap": osm, // Add OSM as a base layer option
-            "Basemap Gray": bm_web_gry,
-            "Basemap Color": bm_web_col
+            //"Basemap Gray": bm_web_gry,
+            //"Basemap Color": bm_web_col,
+            "Protomaps NY Light": protomaps_ny_light,
+            "Protomaps NY Dark": protomaps_ny_dark,
+            "Protomaps NY White": protomaps_ny_white,
+            "Protomaps NY Black": protomaps_ny_black,
+            "Protomaps NY Grayscale": protomaps_ny_grayscale
         }).addTo(map);
     
 
@@ -258,10 +290,30 @@ $(document).ready(function () {
 
             //console.log(aboveThresholdSumCounts, minScoreQuantity)
             if (aboveThresholdSumCounts >= minScoreQuantity) {
-                // Find the maximum score
-                const maxScore = aboveThreshold.reduce((max, obj) => Math.max(max, obj["o"]["score"]), 0);
-                //console.log(maxScore)
-                return maxScore;
+                // bin score
+                const scores = aboveThreshold.map(obj => obj["o"]["score"]);
+
+                const minScore = Math.min(...scores);
+                const maxScore = Math.max(...scores);
+                const meanScore = scores.reduce((sum, score) => sum + score, 0) / scores.length;
+                const medianScore = scores.sort((a, b) => a - b)[Math.floor(scores.length / 2)];
+
+                // Get the selected value from the dropdown
+                const selectedValue = document.getElementById("min_max_mean_median").value;
+
+                // Return the respective score based on the selected value
+                switch (selectedValue) {
+                    case "min":
+                        return minScore;
+                    case "max":
+                        return maxScore;
+                    case "mean":
+                        return meanScore;
+                    case "median":
+                        return medianScore;
+                    default:
+                        return maxScore; 
+                    }
             } else {
                 return 0; // 0 -> white, null -> transparent
             }
@@ -535,6 +587,10 @@ $(document).ready(function () {
     $("#breakMode").on("change", function () {
 
         breakMode = $("#breakMode").val()
+        updateColorValueFunction();
+    });
+
+    $("#min_max_mean_median").on("change", function () {
         updateColorValueFunction();
     });
 

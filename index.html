@@ -39,6 +39,7 @@
     <script src="static/assets/simple-statistics-7-8-3.min.js" charset="utf-8"></script>
     <script src="static/assets/pako.min.js" charset="utf-8"></script>
     <script src="https://unpkg.com/@maplibre/maplibre-gl-leaflet@0.0.17/leaflet-maplibre-gl.js"></script>
+    <script src="https://unpkg.com/protomaps-leaflet@4.0.0/dist/protomaps-leaflet.js"></script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
     <title>Semantic hexagonal on-the-fly binning metrics for city-scale georeferenced social media data</title>
@@ -221,6 +222,18 @@
                         value="1">
                     <input type="range" class="form-control-range" id="minScoreQuantityRange" min="1" max="1000"
                         step="1" value="3">
+                </div>
+
+                <div id="min_max_mean_median_container">
+                <h5><label for="dataFile" data-toggle="tooltip"
+                    title="Select binning function for hexbin. Max is most likely what you're looking for as it behaves intuitively. You'll see a wild 'color jumping' across zoom levels if you select other functions here.">Binning function</label>
+                </h5>
+                <select id="min_max_mean_median" class="form-select">
+                    <option value="min">min</option>
+                    <option selected value="max">max</option>
+                    <option value="mean">mean</option>
+                    <option value="median">median</option>
+                </select>
                 </div>
 
             </details>

@@ -26,3 +26,8 @@ More details in the soon to be published paper or in this [Mascaping Episode](ht
 
 ## Further ideas 
 Dynamically load data from Overturemaps for an AOI of your choice and index on the fly. 
+
+## Protomaps 
+Some basemaps made with protomaps. [Tutorial here](https://github.com/do-me/protomaps-example). Command:
+- `pmtiles extract https://build.protomaps.com/20240812.pmtiles new_york.pmtiles --bbox=-74.476683,40.464809,-73.667257,40.955660 --maxzoom=MAXZOOM=14`
+- Needed to remove zoom level above 14 as the file size was getting too big for GitHub. With 14 I stay just below 50Mb.
