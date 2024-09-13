@@ -97,6 +97,32 @@ $(document).ready(function () {
             theme: 'grayscale'
         });
 
+        // Create different theme layers for Protomaps Milan
+        var protomaps_milan_light = protomapsL.leafletLayer({
+            url: './static/protomaps/milan.pmtiles',
+            theme: 'light'
+        });
+
+        var protomaps_milan_dark = protomapsL.leafletLayer({
+            url: './static/protomaps/milan.pmtiles',
+            theme: 'dark'
+        });
+
+        var protomaps_milan_white = protomapsL.leafletLayer({
+            url: './static/protomaps/milan.pmtiles',
+            theme: 'white'
+        });
+
+        var protomaps_milan_black = protomapsL.leafletLayer({
+            url: './static/protomaps/milan.pmtiles',
+            theme: 'black'
+        });
+
+        var protomaps_milan_grayscale = protomapsL.leafletLayer({
+            url: './static/protomaps/milan.pmtiles',
+            theme: 'grayscale'
+        });
+
         // Layer control for switching between base layers
         layerControl = L.control.layers({
             "OpenStreetMap": osm, // Add OSM as a base layer option
@@ -106,8 +132,14 @@ $(document).ready(function () {
             "Protomaps NY Dark": protomaps_ny_dark,
             "Protomaps NY White": protomaps_ny_white,
             "Protomaps NY Black": protomaps_ny_black,
-            "Protomaps NY Grayscale": protomaps_ny_grayscale
+            "Protomaps NY Grayscale": protomaps_ny_grayscale,
+            "Protomaps Milan Light": protomaps_milan_light,
+            "Protomaps Milan Dark": protomaps_milan_dark,
+            "Protomaps Milan White": protomaps_milan_white,
+            "Protomaps Milan Black": protomaps_milan_black,
+            "Protomaps Milan Grayscale": protomaps_milan_grayscale
         }).addTo(map);
+
 
 
         L.control.scale().addTo(map);
