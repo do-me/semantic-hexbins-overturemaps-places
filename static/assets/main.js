@@ -618,6 +618,7 @@ $(document).ready(function () {
 
         $("#spinner").attr('hidden', '');
         document.getElementById("queryData").disabled = false;
+        map.flyTo([currentCSV[0].lat, currentCSV[0].lon])
     }
 
     initialize_data()
@@ -714,7 +715,7 @@ $(document).ready(function () {
     $("#dataFile").on("change", function () {
         filename = "data/" + $(this).val();
         mean_location_variant = filename.includes("mean_location");
-        initialize_data(query = true)
+        initialize_data(query = true);
     });
 
     $('#queryText').keydown(function (event) {
