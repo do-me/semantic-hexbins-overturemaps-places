@@ -2,7 +2,7 @@
 
 ## See also this demo for Bonn based on Instagram posts: https://do-me.github.io/semantic-hexbins/
 
-A lightweight frontend app using transformers.js showcasing the use of semantic similarity for geospatial applications such as geosocial media. Data source: Overturemaps Places.
+A lightweight frontend app using transformers.js showcasing the use of semantic similarity for geospatial applications such as geosocial media. Data source: Overturemaps Places and their [2118 categories](https://github.com/OvertureMaps/schema/blob/main/docs/schema/concepts/by-theme/places/overture_categories.csv).
 
 Building on previous research:
 
